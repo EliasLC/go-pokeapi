@@ -11,27 +11,40 @@ type Ability struct {
 
 type Move struct {
 	Name        string `json:"name"`
-	Type        string `json:"type"`
-	Effect      string `json:"effect"`
-	ShortEffect string `json:"shortEffect"`
 	Accuracy    int    `json:"accuracy"`
 	DamageClass string `json:"damageClass"`
+	Power       int    `json:"power"`
+	Pp          int    `json:"pp"`
+	Priority    int    `json:"priority"`
+	Target      string `json:"target"`
+	Type        string `json:"type"`
 	Generation  string `json:"generation"`
 }
 
+type MoveVersionGroupDetails struct {
+	LevelLearnedAt int    `json:"levelLearnedAt"`
+	LearnMethod    string `json:"learnMethod"`
+	Version        string `json:"version"`
+}
+
 type Pokemon struct {
-	Name                  string     `json:"name"`
-	NationalPokedexNumber int        `json:"nationalPokedexNumber"`
-	Types                 []string   `json:"types"`
-	Stats                 []*Stats   `json:"stats"`
-	Abilities             []*Ability `json:"abilities"`
-	Moves                 []*Move    `json:"moves"`
-	Sprites               *Sprites   `json:"sprites,omitempty"`
+	Name                  string                `json:"name"`
+	NationalPokedexNumber int                   `json:"nationalPokedexNumber"`
+	Types                 []string              `json:"types"`
+	Stats                 []*Stat               `json:"stats"`
+	Abilities             []*Ability            `json:"abilities"`
+	Moves                 []*PokemonMoveDetails `json:"moves"`
+	Sprites               *Sprites              `json:"sprites,omitempty"`
 }
 
 type PokemonFilter struct {
 	Name                  *string `json:"name,omitempty"`
 	NationalPokedexNumber *int    `json:"nationalPokedexNumber,omitempty"`
+}
+
+type PokemonMoveDetails struct {
+	Name           string                     `json:"name"`
+	VersionDetails []*MoveVersionGroupDetails `json:"versionDetails"`
 }
 
 type PokemonsFilter struct {
@@ -49,7 +62,7 @@ type Sprites struct {
 	FrontShinyFemale *string `json:"frontShinyFemale,omitempty"`
 }
 
-type Stats struct {
+type Stat struct {
 	Name     string `json:"name"`
 	BaseStat int    `json:"baseStat"`
 	Effort   int    `json:"effort"`

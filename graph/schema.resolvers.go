@@ -6,23 +6,12 @@ package graph
 
 import (
 	"context"
-	"fmt"
 	"poke-api-graphql/graph/model"
 )
-
-// Stats is the resolver for the stats field.
-func (r *pokemonResolver) Stats(ctx context.Context, obj *model.Pokemon) ([]*model.Stats, error) {
-	panic(fmt.Errorf("not implemented: Stats - stats"))
-}
 
 // Abilities is the resolver for the abilities field.
 func (r *pokemonResolver) Abilities(ctx context.Context, obj *model.Pokemon) ([]*model.Ability, error) {
 	return r.abilityService.FindAbilitiesData(obj.Abilities)
-}
-
-// Moves is the resolver for the moves field.
-func (r *pokemonResolver) Moves(ctx context.Context, obj *model.Pokemon) ([]*model.Move, error) {
-	panic(fmt.Errorf("not implemented: Moves - moves"))
 }
 
 // Pokemon is the resolver for the pokemon field.

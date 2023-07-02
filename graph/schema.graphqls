@@ -8,17 +8,30 @@ type Ability {
   generation: String!
 }
 
+type MoveVersionGroupDetails {
+  levelLearnedAt: Int!
+  learnMethod: String!
+  version: String!
+}
+
+type PokemonMoveDetails {
+  name: String!
+  versionDetails: [MoveVersionGroupDetails!]!
+}
+
 type Move {
   name: String!
-  type: String!
-  effect: String!
-  shortEffect: String!
   accuracy: Int!
   damageClass: String!
+  power: Int!
+  pp: Int!
+  priority: Int!
+  target: String!
+  type: String!
   generation: String!
 }
 
-type Stats {
+type Stat {
   name: String!
   baseStat: Int!
   effort: Int!
@@ -39,9 +52,9 @@ type Pokemon {
   name: String!
   nationalPokedexNumber: Int!
   types: [String!]!
-  stats: [Stats!]!
+  stats: [Stat!]!
   abilities: [Ability!]!
-  moves: [Move!]!
+  moves: [PokemonMoveDetails!]!
   sprites: Sprites
 }
 

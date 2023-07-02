@@ -84,9 +84,5 @@ models:
       - github.com/99designs/gqlgen/graphql.Int32
   Pokemon:
     fields:
-      stats:
-        resolver: true
       abilities:
-        resolver: true
-      moves:
         resolver: true

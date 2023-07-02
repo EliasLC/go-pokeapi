@@ -81,14 +81,18 @@ func findPokemon(requestUrl string) (*model.Pokemon, error) {
 	}
 
 	types := createTypesField(requestData["types"])
-	abilities := createAbilities(requestData["abilities"])
+	stats := createStatsField(requestData["stats"])
+	abilities := createAbilitiesField(requestData["abilities"])
+	moves := createMovesField(requestData["moves"])
 	sprites := createSpriteField(requestData["sprites"])
 
 	result := model.Pokemon{
 		Name:                  fmt.Sprintf("%v", requestData["name"]),
 		NationalPokedexNumber: int(requestData["id"].(float64)),
 		Types:                 types,
+		Stats:                 stats,
 		Abilities:             abilities,
+		Moves:                 moves,
 		Sprites:               sprites,
 	}
 
@@ -109,7 +113,31 @@ func createTypesField(typesRawData interface{}) []string {
 	return types
 }
 
-func createAbilities(abilitiesRawData interface{}) []*model.Ability {
+func createStatsField(statsRawData interface{}) []*model.Stat {
+	statsData := statsRawData.([]interface{})
+	result := make([]*model.Stat, len(statsData))
+
+	for index, stat := range statsData {
+		statData := stat.(map[string]interface{})
+		statDetails := statData["stat"].(map[string]interface{})
+
+		statName := statDetails["name"].(string)
+		baseStat := int(statData["base_stat"].(float64))
+		effort := int(statData["effort"].(float64))
+
+		newStat := model.Stat{
+			Name:     statName,
+			BaseStat: baseStat,
+			Effort:   effort,
+		}
+
+		result[index] = &newStat
+	}
+
+	return result
+}
+
+func createAbilitiesField(abilitiesRawData interface{}) []*model.Ability {
 	rawData := abilitiesRawData.([]interface{})
 	abilities := make([]*model.Ability, len(rawData))
 
@@ -125,6 +153,51 @@ func createAbilities(abilitiesRawData interface{}) []*model.Ability {
 	}
 
 	return abilities
+}
+
+func createMovesField(movesRawData interface{}) []*model.PokemonMoveDetails {
+	moveListRawData := movesRawData.([]interface{})
+	result := make([]*model.PokemonMoveDetails, len(moveListRawData))
+
+	for index, moveRawData := range moveListRawData {
+		moveMap := moveRawData.(map[string]interface{})
+		moveDetails := moveMap["move"].(map[string]interface{})
+		versionGroupDetails := moveMap["version_group_details"].([]interface{})
+
+		moveName := moveDetails["name"].(string)
+		versionDetails := make([]*model.MoveVersionGroupDetails, len(versionGroupDetails))
+
+		for index, versionMoveDetails := range versionGroupDetails {
+			details := createMoveVersionDetails(versionMoveDetails)
+
+			versionDetails[index] = details
+		}
+
+		newMove := model.PokemonMoveDetails{
+			Name:           moveName,
+			VersionDetails: versionDetails,
+		}
+
+		result[index] = &newMove
+	}
+
+	return result
+}
+
+func createMoveVersionDetails(vgDetails interface{}) *model.MoveVersionGroupDetails {
+	detailsMap := vgDetails.(map[string]interface{})
+	learnMethodMap := detailsMap["move_learn_method"].(map[string]interface{})
+	versionGroupMap := detailsMap["version_group"].(map[string]interface{})
+
+	levelLearnedAt := int(detailsMap["level_learned_at"].(float64))
+	learnMethod := learnMethodMap["name"].(string)
+	version := versionGroupMap["name"].(string)
+
+	return &model.MoveVersionGroupDetails{
+		LevelLearnedAt: levelLearnedAt,
+		LearnMethod:    learnMethod,
+		Version:        version,
+	}
 }
 
 func createSpriteField(spritesRawData interface{}) *model.Sprites {
