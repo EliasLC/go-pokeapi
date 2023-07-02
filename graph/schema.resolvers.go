@@ -17,7 +17,7 @@ func (r *pokemonResolver) Stats(ctx context.Context, obj *model.Pokemon) ([]*mod
 
 // Abilities is the resolver for the abilities field.
 func (r *pokemonResolver) Abilities(ctx context.Context, obj *model.Pokemon) ([]*model.Ability, error) {
-	panic(fmt.Errorf("not implemented: Abilities - abilities"))
+	return r.abilityService.FindAbilitiesData(obj.Abilities)
 }
 
 // Moves is the resolver for the moves field.
@@ -32,9 +32,7 @@ func (r *queryResolver) Pokemon(ctx context.Context, filter model.PokemonFilter)
 
 // Pokemons is the resolver for the pokemons field.
 func (r *queryResolver) Pokemons(ctx context.Context, filter model.PokemonsFilter) ([]*model.Pokemon, error) {
-	result, err := r.pokemonService.FindPokemons(ctx, filter)
-
-	return result, err
+	return r.pokemonService.FindPokemons(ctx, filter)
 }
 
 // Pokemon returns PokemonResolver implementation.

@@ -81,12 +81,14 @@ func findPokemon(requestUrl string) (*model.Pokemon, error) {
 	}
 
 	types := createTypesField(requestData["types"])
+	abilities := createAbilities(requestData["abilities"])
 	sprites := createSpriteField(requestData["sprites"])
 
 	result := model.Pokemon{
 		Name:                  fmt.Sprintf("%v", requestData["name"]),
 		NationalPokedexNumber: int(requestData["id"].(float64)),
 		Types:                 types,
+		Abilities:             abilities,
 		Sprites:               sprites,
 	}
 
@@ -105,6 +107,24 @@ func createTypesField(typesRawData interface{}) []string {
 	}
 
 	return types
+}
+
+func createAbilities(abilitiesRawData interface{}) []*model.Ability {
+	rawData := abilitiesRawData.([]interface{})
+	abilities := make([]*model.Ability, len(rawData))
+
+	for index, ability := range rawData {
+		abilityMap := ability.(map[string]interface{})
+		abilityData := abilityMap["ability"].(map[string]interface{})
+
+		newAbility := model.Ability{
+			Name: abilityData["name"].(string),
+		}
+
+		abilities[index] = &newAbility
+	}
+
+	return abilities
 }
 
 func createSpriteField(spritesRawData interface{}) *model.Sprites {

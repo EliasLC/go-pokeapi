@@ -10,4 +10,5 @@ import (
 
 type Resolver struct {
 	pokemonService services.PokemonService
+	abilityService services.AbilityService
 }
