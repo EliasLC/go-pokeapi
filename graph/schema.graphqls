@@ -1,0 +1,60 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+type Ability {
+  name: String!
+  shortEffect: String!
+  effect: String!
+  generation: String!
+}
+
+type Move {
+  name: String!
+  type: String!
+  effect: String!
+  shortEffect: String!
+  accuracy: Int!
+  damageClass: String!
+  generation: String!
+}
+
+type Stats {
+  name: String!
+  baseStat: Int!
+  effort: Int!
+}
+
+type Sprites {
+  backDefault: String
+  backFemale: String
+  backShiny: String
+  backShinyFemale: String
+  frontDefault: String
+  frontFemale: String
+  frontShiny: String
+  frontShinyFemale: String
+}
+
+type Pokemon {
+  name: String!
+  nationalPokedexNumber: Int!
+  types: [String!]!
+  stats: [Stats!]!
+  abilities: [Ability!]!
+  moves: [Move!]!
+  sprites: Sprites
+}
+
+input PokemonFilter {
+  name: String
+  nationalPokedexNumber: Int
+}
+
+input PokemonsFilter {
+  generation: Int
+}
+
+type Query {
+  pokemon(filter: PokemonFilter!): Pokemon
+  pokemons(filter: PokemonsFilter!): [Pokemon!]!
+}
