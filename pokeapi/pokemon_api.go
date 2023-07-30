@@ -2,15 +2,13 @@ package pokeapi
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 )
 
-const apiUrl = "https://pokeapi.co/api/v2/"
+const ApiUrl = "https://pokeapi.co/api/v2/"
 
-func MakeApiRequest(resourseUrl string) (map[string]interface{}, error) {
-	requestUrl := fmt.Sprintf("%s%s", apiUrl, resourseUrl)
+func MakeApiRequest(requestUrl string) (map[string]interface{}, error) {
 	res, err := http.Get(requestUrl)
 
 	if err != nil {

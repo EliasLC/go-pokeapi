@@ -46,11 +46,11 @@ func (pokemonService PokemonService) FindPokemons(ctx context.Context, filter mo
 	var pokemons []*model.Pokemon
 	var err error
 
-	if filter.Generation == nil {
-		graphql.AddError(ctx, gqlerror.Errorf("Empty Generation Filter!"))
+	if filter.Generation != nil {
+		pokemons, err = repositories.FindPokemosByGeneration(*filter.Generation, *filter.Offset)
+	} else {
+		pokemons, err = repositories.FindPokemons(*filter.Offset)
 	}
-
-	pokemons, err = repositories.FindPokemonByGeneration(*filter.Generation)
 
 	if err != nil {
 		graphql.AddError(ctx, gqlerror.Errorf(err.Error()))

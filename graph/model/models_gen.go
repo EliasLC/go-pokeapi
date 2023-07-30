@@ -49,6 +49,7 @@ type PokemonMoveDetails struct {
 
 type PokemonsFilter struct {
 	Generation *int `json:"generation,omitempty"`
+	Offset     *int `json:"offset,omitempty"`
 }
 
 type Sprites struct {

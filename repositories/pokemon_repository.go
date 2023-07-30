@@ -5,30 +5,57 @@ import (
 	"log"
 	"poke-api-graphql/graph/model"
 	"poke-api-graphql/pokeapi"
+	"poke-api-graphql/repositories/utils"
 	"sync"
 )
 
-const apiResourseName = "pokemon/"
-const apiGenerationResourseName = "generation/"
+const pokemonResourceName = "pokemon/"
 
 type PokemonRepository struct{}
 
 func (repository PokemonRepository) FindByName(name string) (*model.Pokemon, error) {
-	resourceUrl := fmt.Sprintf("%s%s", apiResourseName, name)
+	resourceUrl := fmt.Sprintf("%s%s%s", pokeapi.ApiUrl, pokemonResourceName, name)
 
 	return findPokemon(resourceUrl)
 }
 
 func (repository PokemonRepository) FindByNationalPokedexNumber(nationalPokedexNumber int) (*model.Pokemon, error) {
-	requestUrl := fmt.Sprintf("%s%d", apiResourseName, nationalPokedexNumber)
+	requestUrl := fmt.Sprintf("%s%s%d", pokeapi.ApiUrl, pokemonResourceName, nationalPokedexNumber)
 
 	return findPokemon(requestUrl)
 }
 
-func FindPokemonByGeneration(generation int) ([]*model.Pokemon, error) {
-	requestUrl := fmt.Sprintf("%s%d", apiGenerationResourseName, generation)
+func FindPokemons(offset int) ([]*model.Pokemon, error) {
+	requestUrl := fmt.Sprintf("%s%s?offset=%d", pokeapi.ApiUrl, pokemonResourceName, offset)
 
 	return findPokemons(requestUrl)
+}
+
+func FindPokemosByGeneration(generation int, offset int) ([]*model.Pokemon, error) {
+	pokeApiOffset := utils.GenerationInitialOffset(generation) + offset
+	pokeApiOffsetLimit := getPokeApiLimit(generation, offset)
+
+	log.Println("offset: ", pokeApiOffset, " limit: ", pokeApiOffsetLimit)
+
+	requestUrl := fmt.Sprintf("%s%s?offset=%d&limit=%d", pokeapi.ApiUrl, pokemonResourceName, pokeApiOffset, pokeApiOffsetLimit)
+
+	return findPokemons(requestUrl)
+}
+
+func getPokeApiLimit(generation int, offset int) int {
+	generationPokemonCount := utils.GenerationPokemonCount(generation)
+
+	var pokeApiLimit = 20
+
+	if (offset + 20) > generationPokemonCount {
+		return generationPokemonCount - offset
+	}
+
+	if pokeApiLimit <= 0 {
+		return -1
+	}
+
+	return pokeApiLimit
 }
 
 func findPokemons(requestUrl string) ([]*model.Pokemon, error) {
@@ -38,7 +65,7 @@ func findPokemons(requestUrl string) ([]*model.Pokemon, error) {
 		return nil, err
 	}
 
-	pokemonsData := requestData["pokemon_species"].([]interface{})
+	pokemonsData := requestData["results"].([]interface{})
 
 	return createPokemonList(pokemonsData)
 }
@@ -49,9 +76,7 @@ func createPokemonList(pokemonsData []interface{}) ([]*model.Pokemon, error) {
 
 	for index, pokemon := range pokemonsData {
 		pokemonData := pokemon.(map[string]interface{})
-		pokemonName := pokemonData["name"].(string)
-		pokemonRequestUrl := fmt.Sprintf("%s%s", apiResourseName, pokemonName)
-
+		pokemonRequestUrl := pokemonData["url"].(string)
 		wg.Add(1)
 
 		go func(index int) {
