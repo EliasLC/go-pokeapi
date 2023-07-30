@@ -47,9 +47,9 @@ func (pokemonService PokemonService) FindPokemons(ctx context.Context, filter mo
 	var err error
 
 	if filter.Generation != nil {
-		pokemons, err = repositories.FindPokemosByGeneration(*filter.Generation, *filter.Offset)
+		pokemons, err = repositories.FindPokemosByGeneration(*filter.Generation, filter.Offset, filter.Limit)
 	} else {
-		pokemons, err = repositories.FindPokemons(*filter.Offset)
+		pokemons, err = repositories.FindPokemons(filter.Offset, filter.Limit)
 	}
 
 	if err != nil {

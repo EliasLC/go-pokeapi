@@ -25,37 +25,33 @@ func (repository PokemonRepository) FindByNationalPokedexNumber(nationalPokedexN
 	return findPokemon(requestUrl)
 }
 
-func FindPokemons(offset int) ([]*model.Pokemon, error) {
-	requestUrl := fmt.Sprintf("%s%s?offset=%d", pokeapi.ApiUrl, pokemonResourceName, offset)
+func FindPokemons(offset int, limit int) ([]*model.Pokemon, error) {
+	requestUrl := fmt.Sprintf("%s%s?offset=%d&limit=%d", pokeapi.ApiUrl, pokemonResourceName, offset, limit)
 
 	return findPokemons(requestUrl)
 }
 
-func FindPokemosByGeneration(generation int, offset int) ([]*model.Pokemon, error) {
+func FindPokemosByGeneration(generation int, offset int, requestLimit int) ([]*model.Pokemon, error) {
 	pokeApiOffset := utils.GenerationInitialOffset(generation) + offset
-	pokeApiOffsetLimit := getPokeApiLimit(generation, offset)
-
-	log.Println("offset: ", pokeApiOffset, " limit: ", pokeApiOffsetLimit)
+	pokeApiOffsetLimit := getPokeApiLimit(generation, offset, requestLimit)
 
 	requestUrl := fmt.Sprintf("%s%s?offset=%d&limit=%d", pokeapi.ApiUrl, pokemonResourceName, pokeApiOffset, pokeApiOffsetLimit)
 
 	return findPokemons(requestUrl)
 }
 
-func getPokeApiLimit(generation int, offset int) int {
+func getPokeApiLimit(generation int, offset int, requestLimit int) int {
 	generationPokemonCount := utils.GenerationPokemonCount(generation)
 
-	var pokeApiLimit = 20
-
-	if (offset + 20) > generationPokemonCount {
+	if (offset + requestLimit) > generationPokemonCount {
 		return generationPokemonCount - offset
 	}
 
-	if pokeApiLimit <= 0 {
+	if requestLimit <= 0 {
 		return -1
 	}
 
-	return pokeApiLimit
+	return requestLimit
 }
 
 func findPokemons(requestUrl string) ([]*model.Pokemon, error) {

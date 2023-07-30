@@ -65,7 +65,8 @@ input PokemonFilter {
 
 input PokemonsFilter {
   generation: Int
-  offset: Int
+  offset: Int!
+  limit: Int!
 }
 
 type Query {
